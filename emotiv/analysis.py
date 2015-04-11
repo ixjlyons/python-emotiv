@@ -85,8 +85,8 @@ def psd_classifier(eeg_data, experiment, block_size, time_range=None):
     else:
         right_scores = [right_freq - psd_step, right_freq, right_freq + psd_step]
 
-    print "Left freq powers @ ", left_scores
-    print "Right freq powers @ ", right_scores
+    print("Left freq powers @ {}".format(left_scores))
+    print("Right freq powers @ {}".format(right_scores))
 
     # Classification results
     results = np.zeros([n_trials + 1, len(labels)])
@@ -125,7 +125,7 @@ def psd_classifier(eeg_data, experiment, block_size, time_range=None):
             d = signal.detrend(chans[i])
             iterations = d.size / block_size
 
-            print "Channel is %s, variance is %.2f" % (labels[i], np.var(d, ddof=1))
+            print("Channel is %s, variance is %.2f" % (labels[i], np.var(d, ddof=1)))
 
             for it in range(iterations):
                 block = d[it * block_size: ((it+1) * block_size)]
@@ -145,13 +145,13 @@ def psd_classifier(eeg_data, experiment, block_size, time_range=None):
                 else:
                     hits["right"] += 1
 
-                print "Trial %d (Cue: %s (%sHz)): [%d/%d] Left: %.2f (%d) Right: %.2f (%d)" % ((t + 1), cue, eval("%s_freq" % cue),
-                        (it + 1), iterations, fl_mean, hits["left"], fr_mean, hits["right"])
+                print("Trial %d (Cue: %s (%sHz)): [%d/%d] Left: %.2f (%d) Right: %.2f (%d)" % ((t + 1), cue, eval("%s_freq" % cue),
+                        (it + 1), iterations, fl_mean, hits["left"], fr_mean, hits["right"]))
                 #pl.plot(freqs,10*np.log10(avg_psd))
                 #pl.show()
 
 
-            print "Left %d, Right %d for cue %s" % (hits["left"], hits["right"], cue)
+            print("Left %d, Right %d for cue %s" % (hits["left"], hits["right"], cue))
 
             # Record averaged PSD's
             final_pxx[t, :, i] = avg_psd
@@ -165,7 +165,7 @@ def psd_classifier(eeg_data, experiment, block_size, time_range=None):
     results[-1] = np.mean(results[:-1], axis=0)
     for i in range(len(labels)):
         if results[-1, i] > 0.5:
-            print "Channel: %s, Classification Rate: %.2f%%" % (labels[i], results[-1, i]*100)
+            print("Channel: %s, Classification Rate: %.2f%%" % (labels[i], results[-1, i]*100))
 
     #max_idx = np.where(results[-1] > 0.5)[0]
     #print labels[c]

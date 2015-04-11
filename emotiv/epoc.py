@@ -176,14 +176,14 @@ class EPOC(object):
         """Custom match function for libusb."""
         try:
             manu = usb.util.get_string(device, 1024, device.iManufacturer)
-        except usb.core.USBError, usb_exception:
+        except usb.core.USBError as usb_exception:
             # If the udev rule is installed, we shouldn't get an exception
             # for Emotiv device.
-            print usb_exception
+            print(usb_exception)
             return False
         else:
             if manu and manu.startswith(self.MANUFACTURER_PREFIX):
-                print manu
+                print(manu)
                 return True
                 # FIXME: This may not be necessary at all Found a dongle, check for interface class 3
                 for interf in device.get_active_configuration():
@@ -205,7 +205,7 @@ class EPOC(object):
             return
 
         devices = usb.core.find(find_all=True, custom_match=self._is_epoc)
-        print "Devices found: %d" % len(devices)
+        print("Devices found: %d" % len(devices))
 
         if not devices:
             raise EPOCNotPluggedError("Emotiv EPOC not found.")
@@ -222,7 +222,7 @@ class EPOC(object):
             self.product_id = "%x" % dev.idProduct
 
             if self.product_id == "0001":
-                print "Consumer headset detected."
+                print("Consumer headset detected.")
                 self.headset_type = "consumer"
 
             if self.method == "libusb":
@@ -253,7 +253,7 @@ class EPOC(object):
         except usb.USBError as ue:
             if ue.errno == 110:
                 self.headset_on = False
-                print "Setup is OK but make sure that headset is turned on."
+                print("Setup is OK but make sure that headset is turned on.")
         else:
             self.headset_on = True
 
@@ -424,16 +424,16 @@ def main():
                 print("\x1b[2J\x1b[H")
                 header = "Emotiv Data Packet [%3d/128] [Loss: N/A] [Battery: %2d(%%)]" % (
                     e.counter, e.battery)
-                print "%s\n%s" % (header, '-'*len(header))
+                print("%s\n%s" % (header, '-'*len(header)))
 
-                print "%10s: %5d" % ("Gyro(x)", e.gyroX)
-                print "%10s: %5d" % ("Gyro(y)", e.gyroY)
+                print("%10s: %5d" % ("Gyro(x)", e.gyroX))
+                print("%10s: %5d" % ("Gyro(y)", e.gyroY))
 
                 for i,channel in enumerate(e.channel_mask):
-                    print "%10s: %.2f %20s: %.2f" % (channel, data[i], "Quality", e.quality[channel])
-        except EPOCTurnedOffError, ete:
-            print ete
-        except KeyboardInterrupt, ki:
+                    print("%10s: %.2f %20s: %.2f" % (channel, data[i], "Quality", e.quality[channel]))
+        except EPOCTurnedOffError as ete:
+            print(ete)
+        except KeyboardInterrupt as ki:
             e.disconnect()
             return 0
 
