@@ -37,8 +37,8 @@ def get_level(raw_data, bits):
     level = 0
     for i in range(13, -1, -1):
         level <<= 1
-        b, o = (bits[i] / 8) + 1, bits[i] % 8
-        level |= (ord(raw_data[b]) >> o) & 1
+        b, o = int((bits[i] / 8)) + 1, bits[i] % 8
+        level |= (ord(raw_data[b:b+1]) >> o) & 1
     return 0.51*level
 
 def save_as_matlab(_buffer, channel_mask, folder=None, prefix=None, filename=None, metadata=None):

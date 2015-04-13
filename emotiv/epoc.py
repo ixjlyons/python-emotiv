@@ -176,7 +176,7 @@ class EPOC(object):
         """Custom match function for libusb."""
         try:
             manu = usb.util.get_string(device, device.iManufacturer)
-        except usb.core.USBError, usb_exception:
+        except usb.core.USBError as usb_exception:
             # If the udev rule is installed, we shouldn't get an exception
             # for Emotiv device.
             print(usb_exception)
@@ -297,13 +297,13 @@ class EPOC(object):
     def get_sample(self):
         """Returns an array of EEG samples."""
         try:
-            raw_data = self._cipher.decrypt(self.endpoint.read(32))
+            raw_data = self._cipher.decrypt(self.endpoint.read(32).tostring())
             # Parse counter
-            ctr = ord(raw_data[0])
+            ctr = ord(raw_data[0:1])
             # Update gyro's if requested
             if self.enable_gyro:
-                self.gyroX = ((ord(raw_data[29]) << 4) | (ord(raw_data[31]) >> 4))
-                self.gyroY = ((ord(raw_data[30]) << 4) | (ord(raw_data[31]) & 0x0F))
+                self.gyroX = ((ord(raw_data[29:30]) << 4) | (ord(raw_data[31:32]) >> 4))
+                self.gyroY = ((ord(raw_data[30:31]) << 4) | (ord(raw_data[31:32]) & 0x0F))
             if ctr < 128:
                 self.counter = ctr
                 # Contact qualities
@@ -352,7 +352,7 @@ class EPOC(object):
             for i in range(13, -1, -1):
                 level <<= 1
                 b, o = (bits[i] / 8) + 1, bits[i] % 8
-                level |= (ord(raw_data[b]) >> o) & 1
+                level |= (ord(raw_data[b:b+1]) >> o) & 1
             # Return level in uV (microVolts)
             return level
 
@@ -379,7 +379,7 @@ class EPOC(object):
             if c == total_samples:
                 break
             # Parse counter
-            ctr = ord(block[0])
+            ctr = ord(block[0:1])
             # Skip battery
             if ctr < 128:
                 idx.append(ctr)
